@@ -1,0 +1,17 @@
+.toggle {
+  display: inline-flex;
+  background: #f4f6fa;
+  border-radius: 8px;
+}
+
+.toggle button {
+  border: 0;
+  background: transparent;
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+
+.active {
+  background: #dbe7ff !important;
+  border-radius: 8px;
+}

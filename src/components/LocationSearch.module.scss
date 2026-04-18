@@ -1,0 +1,52 @@
+.searchSection {
+  margin: 1rem 0;
+}
+
+.label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.input {
+  flex: 1;
+  min-width: 250px;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #c8d4ea;
+  border-radius: 8px;
+}
+
+.submitButton {
+  border: 0;
+  background: #1b4ddb;
+  color: #fff;
+  padding: 0.55rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.button,
+.activeButton {
+  border: 1px solid #c8d4ea;
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+}
+
+.activeButton {
+  background: #dbe7ff;
+}

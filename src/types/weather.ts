@@ -10,6 +10,7 @@ export interface LocationOption {
 }
 
 export interface OpenMeteoResponse {
+  timezone: string;
   current: {
     time: string;
     temperature_2m: number;
@@ -54,6 +55,7 @@ export interface DailyForecastPoint {
 }
 
 export interface WeatherViewModel {
+  timezone: string;
   current: CurrentWeather;
   hourly: HourlyForecastPoint[];
   daily: DailyForecastPoint[];

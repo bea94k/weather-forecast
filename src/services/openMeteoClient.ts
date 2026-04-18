@@ -35,6 +35,7 @@ function assertValidResponse(data: unknown): asserts data is OpenMeteoResponse {
   if (
     !data ||
     typeof data !== "object" ||
+    !("timezone" in data) ||
     !("current" in data) ||
     !("hourly" in data) ||
     !("daily" in data)
@@ -58,6 +59,7 @@ function mapToViewModel(response: OpenMeteoResponse): WeatherViewModel {
   }));
 
   return {
+    timezone: response.timezone,
     current: {
       time: response.current.time,
       temperature: response.current.temperature_2m,
