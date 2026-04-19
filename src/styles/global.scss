@@ -1,8 +1,44 @@
 :root {
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  line-height: 1.4;
-  color: #172033;
-  background: #eef3fb;
+  // Typography
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg-page);
+
+  // Palette
+  --color-text: #172033;
+  --color-text-muted: #4a5568;
+  --color-bg-page: #eef3fb;
+  --color-surface: #ffffff;
+  --color-border: #c8d4ea;
+  --color-border-subtle: #e4eaf5;
+  --color-accent: #1b4ddb;
+  --color-accent-hover: #153db5;
+  --color-accent-soft: #dbe7ff;
+  --color-surface-muted: #f4f6fa;
+  --color-surface-tint: #f8fbff;
+  --color-error-text: #7f1d1d;
+  --color-error-bg: #fee2e2;
+  --color-focus-ring: #1b4ddb;
+
+  // Layout
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --shadow-panel: 0 4px 24px rgba(23, 32, 51, 0.08);
+  --space-page: clamp(0.75rem, 3vw, 1.5rem);
+  --space-panel: clamp(1rem, 3vw, 1.5rem);
+  --content-max: 900px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 *,
@@ -13,9 +49,12 @@
 
 body {
   margin: 0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
 input {
   font: inherit;
+  color: inherit;
 }

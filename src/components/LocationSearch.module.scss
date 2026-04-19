@@ -1,3 +1,5 @@
+@use "../styles/mixins" as *;
+
 .searchSection {
   margin: 1rem 0;
 }
@@ -6,29 +8,52 @@
   display: block;
   margin-bottom: 0.4rem;
   font-weight: 600;
+  color: var(--color-text);
 }
 
 .form {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  align-items: stretch;
 }
 
 .input {
   flex: 1;
-  min-width: 250px;
-  padding: 0.55rem 0.7rem;
-  border: 1px solid #c8d4ea;
-  border-radius: 8px;
+  min-width: min(100%, 16rem);
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+
+  &:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+    border-color: var(--color-accent);
+  }
 }
 
 .submitButton {
   border: 0;
-  background: #1b4ddb;
+  background: var(--color-accent);
   color: #fff;
-  padding: 0.55rem 0.8rem;
-  border-radius: 8px;
+  min-height: 2.75rem;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: var(--color-accent-hover);
+  }
+
+  @include focus-visible-ring;
 }
 
 .buttons {
@@ -40,13 +65,24 @@
 
 .button,
 .activeButton {
-  border: 1px solid #c8d4ea;
-  background: #fff;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
   border-radius: 999px;
-  padding: 0.3rem 0.75rem;
+  min-height: 2.75rem;
+  padding: 0.4rem 1rem;
   cursor: pointer;
+  color: var(--color-text);
+
+  &:hover {
+    border-color: var(--color-text-muted);
+    background: var(--color-surface-tint);
+  }
+
+  @include focus-visible-ring;
 }
 
 .activeButton {
-  background: #dbe7ff;
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  font-weight: 600;
 }

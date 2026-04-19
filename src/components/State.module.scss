@@ -1,14 +1,23 @@
 .message {
   margin-top: 1rem;
-  padding: 0.75rem;
-  background: #f8fbff;
-  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  background: var(--color-surface-tint);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-muted);
 }
 
 .error {
   margin-top: 1rem;
-  padding: 0.75rem;
-  color: #8a1a1a;
-  background: #ffeaea;
-  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  color: var(--color-error-text);
+  background: var(--color-error-bg);
+  border-radius: var(--radius-sm);
+  border: 1px solid color-mix(in srgb, var(--color-error-text) 25%, transparent);
+}
+
+@supports not (color: color-mix(in srgb, red, blue)) {
+  .error {
+    border: 1px solid #fecaca;
+  }
 }

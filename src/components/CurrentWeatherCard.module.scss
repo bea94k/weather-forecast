@@ -1,35 +1,48 @@
 .card {
-  padding: 1rem;
-  border: 1px solid #e4eaf5;
-  border-radius: 10px;
+  padding: clamp(1rem, 3vw, 1.25rem);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-tint);
+}
+
+.card h2 {
+  margin: 0 0 0.25rem;
+  font-size: clamp(1.1rem, 2.5vw, 1.25rem);
 }
 
 .time {
-  color: #5b6678;
+  color: var(--color-text-muted);
   margin-bottom: 0.4rem;
+  font-size: 0.95rem;
 }
 
 .temperature {
-  font-size: 2rem;
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 700;
   margin: 0.25rem 0;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .description {
   margin-top: 0;
+  color: var(--color-text-muted);
 }
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
 }
 
 .stats dt {
-  color: #5b6678;
-  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
 }
 
 .stats dd {
   margin: 0.2rem 0 0;
   font-weight: 600;
+  color: var(--color-text);
 }
