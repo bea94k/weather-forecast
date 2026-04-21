@@ -5,21 +5,38 @@
   color: var(--color-text);
   background: var(--color-bg-page);
 
-  // Palette
-  --color-text: #172033;
-  --color-text-muted: #4a5568;
-  --color-bg-page: #eef3fb;
-  --color-surface: #ffffff;
-  --color-border: #c8d4ea;
-  --color-border-subtle: #e4eaf5;
-  --color-accent: #1b4ddb;
-  --color-accent-hover: #153db5;
-  --color-accent-soft: #dbe7ff;
-  --color-surface-muted: #f4f6fa;
-  --color-surface-tint: #f8fbff;
-  --color-error-text: #7f1d1d;
-  --color-error-bg: #fee2e2;
-  --color-focus-ring: #1b4ddb;
+  // Theme tokens
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f8fbff;
+  --color-neutral-100: #eef3fb;
+  --color-neutral-150: #f4f6fa;
+  --color-neutral-200: #e4eaf5;
+  --color-neutral-300: #c8d4ea;
+  --color-neutral-600: #4a5568;
+  --color-neutral-900: #172033;
+  --color-primary-100: #dbe7ff;
+  --color-primary-600: #1b4ddb;
+  --color-primary-700: #153db5;
+  --color-accent-500: #f5b800;
+  --color-error-100: #fee2e2;
+  --color-error-700: #7f1d1d;
+
+  // Semantic aliases
+  --color-text: var(--color-neutral-900);
+  --color-text-muted: var(--color-neutral-600);
+  --color-bg-page: var(--color-neutral-100);
+  --color-surface: var(--color-neutral-0);
+  --color-surface-subtle: var(--color-neutral-50);
+  --color-surface-muted: var(--color-neutral-150);
+  --color-border: var(--color-neutral-300);
+  --color-border-hover: var(--color-neutral-600);
+  --color-border-subtle: var(--color-neutral-200);
+  --color-action-primary: var(--color-primary-600);
+  --color-action-primary-hover: var(--color-primary-700);
+  --color-action-primary-subtle: var(--color-primary-100);
+  --color-error-text: var(--color-error-700);
+  --color-error-bg: var(--color-error-100);
+  --color-focus-ring: var(--color-action-primary);
 
   // Layout
   --radius-sm: 8px;

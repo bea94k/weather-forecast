@@ -29,19 +29,19 @@
   color: var(--color-text);
 
   &:hover {
-    border-color: var(--color-text-muted);
+    border-color: var(--color-border-hover);
   }
 
   &:focus-visible {
     outline: 2px solid var(--color-focus-ring);
     outline-offset: 2px;
-    border-color: var(--color-accent);
+    border-color: var(--color-action-primary);
   }
 }
 
 .submitButton {
   border: 0;
-  background: var(--color-accent);
+  background: var(--color-action-primary);
   color: #fff;
   min-height: 2.75rem;
   padding: 0.55rem 1rem;
@@ -50,7 +50,7 @@
   font-weight: 600;
 
   &:hover {
-    background: var(--color-accent-hover);
+    background: var(--color-action-primary-hover);
   }
 
   @include focus-visible-ring;
@@ -74,15 +74,15 @@
   color: var(--color-text);
 
   &:hover {
-    border-color: var(--color-text-muted);
-    background: var(--color-surface-tint);
+    border-color: var(--color-border-hover);
+    background: var(--color-surface-subtle);
   }
 
   @include focus-visible-ring;
 }
 
 .activeButton {
-  background: var(--color-accent-soft);
-  border-color: var(--color-accent);
+  background: var(--color-action-primary-subtle);
+  border-color: var(--color-action-primary);
   font-weight: 600;
 }
