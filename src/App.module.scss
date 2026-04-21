@@ -42,10 +42,8 @@
   margin-top: 1.25rem;
   display: grid;
   gap: 1.25rem;
-}
 
-@media (min-width: 900px) {
-  .content {
+  @media (min-width: 900px) {
     grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
     align-items: start;
   }

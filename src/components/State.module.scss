@@ -14,10 +14,8 @@
   background: var(--color-error-bg);
   border-radius: var(--radius-sm);
   border: 1px solid color-mix(in srgb, var(--color-error-text) 25%, transparent);
-}
 
-@supports not (color: color-mix(in srgb, red, blue)) {
-  .error {
+  @supports not (color: color-mix(in srgb, red, blue)) {
     border: 1px solid #fecaca;
   }
 }
