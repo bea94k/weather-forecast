@@ -1,0 +1,101 @@
+import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import App from "./App";
+import type { WeatherViewModel } from "./types/weather";
+import { fetchWeather } from "./services/openMeteoClient";
+
+vi.mock("./services/openMeteoClient", () => ({
+  fetchWeather: vi.fn()
+}));
+
+const mockFetchWeather = vi.mocked(fetchWeather);
+
+const mockWeather: WeatherViewModel = {
+  timezone: "Europe/Helsinki",
+  current: {
+    time: "2026-04-21T12:00",
+    temperature: 12,
+    feelsLike: 10,
+    humidity: 60,
+    windSpeed: 15,
+    weatherCode: 1
+  },
+  hourly: [
+    { time: "2026-04-21T12:00", temperature: 12, weatherCode: 1 },
+    { time: "2026-04-21T13:00", temperature: 13, weatherCode: 2 }
+  ],
+  daily: [
+    { time: "2026-04-21", minTemperature: 7, maxTemperature: 13, weatherCode: 1 },
+    { time: "2026-04-22", minTemperature: 8, maxTemperature: 14, weatherCode: 2 }
+  ]
+};
+
+describe("App", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("renders loading and then success state", async () => {
+    mockFetchWeather.mockResolvedValueOnce(mockWeather);
+    render(<App />);
+
+    expect(screen.getByRole("status")).toHaveTextContent("Loading latest weather data...");
+    expect(await screen.findByRole("heading", { name: "Helsinki" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Next 12 hours" })).toBeInTheDocument();
+  });
+
+  it("renders error state when weather fetch fails", async () => {
+    mockFetchWeather.mockRejectedValueOnce(new Error("Service down"));
+    render(<App />);
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "Could not load weather data. Service down"
+    );
+  });
+
+  it("updates data when temperature unit changes", async () => {
+    mockFetchWeather.mockResolvedValue(mockWeather);
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByRole("heading", { name: "Helsinki" });
+
+    const unitGroup = screen.getByRole("group", { name: "Temperature unit" });
+    await user.click(within(unitGroup).getByRole("button", { name: "F" }));
+
+    await waitFor(() => {
+      expect(mockFetchWeather).toHaveBeenLastCalledWith(
+        expect.objectContaining({ id: "helsinki" }),
+        "fahrenheit"
+      );
+    });
+  });
+
+  it("switches forecast view to daily", async () => {
+    mockFetchWeather.mockResolvedValue(mockWeather);
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByRole("heading", { name: "Helsinki" });
+
+    await user.click(screen.getByRole("button", { name: "Daily" }));
+    expect(await screen.findByRole("heading", { name: "Next 7 days" })).toBeInTheDocument();
+  });
+
+  it("refetches when selecting another location", async () => {
+    mockFetchWeather.mockResolvedValue(mockWeather);
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByRole("heading", { name: "Helsinki" });
+
+    await user.click(screen.getByRole("button", { name: "London" }));
+    await waitFor(() => {
+      expect(mockFetchWeather).toHaveBeenLastCalledWith(
+        expect.objectContaining({ id: "london" }),
+        "celsius"
+      );
+    });
+  });
+});
