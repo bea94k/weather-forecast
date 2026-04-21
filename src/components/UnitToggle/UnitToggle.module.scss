@@ -1,4 +1,4 @@
-@use "../styles/mixins" as *;
+@use "../../styles/mixins" as *;
 
 .toggle {
   display: inline-flex;
@@ -11,6 +11,7 @@
     border: 0;
     background: transparent;
     min-height: 2.75rem;
+    min-width: 2.75rem;
     padding: 0.5rem 0.85rem;
     cursor: pointer;
     color: var(--color-text);
@@ -23,6 +24,7 @@
 
     &.active {
       background: var(--color-action-primary-subtle);
+      color: var(--color-text);
       box-shadow: inset 0 0 0 1px var(--color-border);
     }
 

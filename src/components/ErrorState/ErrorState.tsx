@@ -1,4 +1,4 @@
-import styles from "./State.module.scss";
+import styles from "./ErrorState.module.scss";
 
 interface ErrorStateProps {
   message: string;

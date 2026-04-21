@@ -2,13 +2,13 @@ import type {
   DailyForecastPoint,
   ForecastView,
   HourlyForecastPoint
-} from "../types/weather";
+} from "../../types/weather";
 import {
   formatDay,
   formatHour,
   formatTemperature,
   weatherCodeToLabel
-} from "../utils/formatters";
+} from "../../utils/formatters";
 import styles from "./ForecastList.module.scss";
 
 interface ForecastListProps {

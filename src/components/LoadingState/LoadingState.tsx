@@ -1,4 +1,4 @@
-import styles from "./State.module.scss";
+import styles from "./LoadingState.module.scss";
 
 export function LoadingState() {
   return (

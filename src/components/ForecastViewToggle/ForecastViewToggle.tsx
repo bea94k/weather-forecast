@@ -1,4 +1,4 @@
-import type { ForecastView } from "../types/weather";
+import type { ForecastView } from "../../types/weather";
 import styles from "./ForecastViewToggle.module.scss";
 
 interface ForecastViewToggleProps {

@@ -7,13 +7,13 @@ import type {
   TemperatureUnit,
   WeatherViewModel
 } from "./types/weather";
-import { CurrentWeatherCard } from "./components/CurrentWeatherCard";
-import { ErrorState } from "./components/ErrorState";
-import { ForecastList } from "./components/ForecastList";
-import { ForecastViewToggle } from "./components/ForecastViewToggle";
-import { LoadingState } from "./components/LoadingState";
-import { LocationSearch } from "./components/LocationSearch";
-import { UnitToggle } from "./components/UnitToggle";
+import { CurrentWeatherCard } from "./components/CurrentWeatherCard/CurrentWeatherCard";
+import { ErrorState } from "./components/ErrorState/ErrorState";
+import { ForecastList } from "./components/ForecastList/ForecastList";
+import { ForecastViewToggle } from "./components/ForecastViewToggle/ForecastViewToggle";
+import { LoadingState } from "./components/LoadingState/LoadingState";
+import { LocationSearch } from "./components/LocationSearch/LocationSearch";
+import { UnitToggle } from "./components/UnitToggle/UnitToggle";
 import styles from "./App.module.scss";
 
 const DEFAULT_LOCATION = PRESET_LOCATIONS[0];

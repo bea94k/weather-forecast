@@ -1,5 +1,5 @@
-import type { CurrentWeather, LocationOption } from "../types/weather";
-import { formatDay, formatTemperature, weatherCodeToLabel } from "../utils/formatters";
+import type { CurrentWeather, LocationOption } from "../../types/weather";
+import { formatDay, formatTemperature, weatherCodeToLabel } from "../../utils/formatters";
 import styles from "./CurrentWeatherCard.module.scss";
 
 interface CurrentWeatherCardProps {

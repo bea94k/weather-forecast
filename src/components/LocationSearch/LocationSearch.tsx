@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { SyntheticEvent } from "react";
-import type { LocationOption } from "../types/weather";
+import type { LocationOption } from "../../types/weather";
 import styles from "./LocationSearch.module.scss";
 
 interface LocationSearchProps {

@@ -1,4 +1,4 @@
-import type { TemperatureUnit } from "../types/weather";
+import type { TemperatureUnit } from "../../types/weather";
 import styles from "./UnitToggle.module.scss";
 
 interface UnitToggleProps {
