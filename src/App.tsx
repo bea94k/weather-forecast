@@ -12,7 +12,7 @@ import { ErrorState } from "./components/ErrorState/ErrorState";
 import { ForecastList } from "./components/ForecastList/ForecastList";
 import { ForecastViewToggle } from "./components/ForecastViewToggle/ForecastViewToggle";
 import { LoadingState } from "./components/LoadingState/LoadingState";
-import { LocationSearch } from "./components/LocationSearch/LocationSearch";
+import { LocationChoice } from "./components/LocationChoice/LocationChoice/LocationChoice";
 import { UnitToggle } from "./components/UnitToggle/UnitToggle";
 import styles from "./App.module.scss";
 
@@ -75,7 +75,7 @@ export default function App() {
           <p>Current conditions and short-term forecast by location.</p>
         </header>
 
-        <LocationSearch
+        <LocationChoice
           locations={PRESET_LOCATIONS}
           activeLocationId={selectedLocation.id}
           onLocationSelect={setSelectedLocation}

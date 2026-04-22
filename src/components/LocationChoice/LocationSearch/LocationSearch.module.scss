@@ -1,22 +1,10 @@
-@use "../../styles/mixins" as *;
-
-.searchSection {
-  margin: 1rem 0;
-}
-
-.label {
-  display: block;
-  margin: 1rem 0 0.4rem;
-  font-weight: 600;
-  color: var(--color-text);
-}
+@use "../../../styles/mixins" as *;
 
 .form {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: stretch;
-  margin-top: 0.5rem;
 }
 
 .input {
@@ -55,37 +43,6 @@
   }
 
   @include focus-visible-ring;
-}
-
-.buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.25rem;
-}
-
-.button,
-.activeButton {
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  border-radius: 999px;
-  min-height: 2.75rem;
-  padding: 0.4rem 1rem;
-  cursor: pointer;
-  color: var(--color-text);
-
-  &:hover {
-    border-color: var(--color-border-hover);
-    background: var(--color-surface-subtle);
-  }
-
-  @include focus-visible-ring;
-}
-
-.activeButton {
-  background: var(--color-action-primary-subtle);
-  border-color: var(--color-action-primary);
-  font-weight: 600;
 }
 
 .visuallyHidden {

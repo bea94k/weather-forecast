@@ -1,13 +1,13 @@
-import styles from "./LocationInputModeToggle.module.scss";
+import styles from "./LocationModeToggle.module.scss";
 
 type LocationInputMode = "search" | "map";
 
-interface LocationInputModeToggleProps {
+interface LocationModeToggleProps {
   value: LocationInputMode;
   onChange: (value: LocationInputMode) => void;
 }
 
-export function LocationInputModeToggle({ value, onChange }: LocationInputModeToggleProps) {
+export function LocationModeToggle({ value, onChange }: LocationModeToggleProps) {
   return (
     <div className={styles.toggle} role="group" aria-label="Location input mode">
       <button

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
 import type { LatLngLiteral, LeafletMouseEvent } from "leaflet";
-import type { LocationOption } from "../../types/weather";
+import type { LocationOption } from "../../../types/weather";
 import styles from "./LocationMapPicker.module.scss";
 
 interface LocationMapPickerProps {
