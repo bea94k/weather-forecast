@@ -84,13 +84,18 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "Next 7 days" })).toBeInTheDocument();
   });
 
-  it("refetches when selecting another location", async () => {
+  it("refetches when selecting another location from search", async () => {
     mockFetchWeather.mockResolvedValue(mockWeather);
     const user = userEvent.setup();
     render(<App />);
     await screen.findByRole("heading", { name: "Helsinki" });
 
-    await user.click(screen.getByRole("button", { name: "London" }));
+    const locationForm = screen.getByLabelText("Search for a city").closest("form");
+    expect(locationForm).not.toBeNull();
+
+    await user.type(screen.getByLabelText("Search for a city"), "London");
+    await user.click(within(locationForm!).getByRole("button", { name: "Search" }));
+
     await waitFor(() => {
       expect(mockFetchWeather).toHaveBeenLastCalledWith(
         expect.objectContaining({ id: "london" }),
