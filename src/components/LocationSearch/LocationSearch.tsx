@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
-import type { SyntheticEvent } from "react";
+import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
+import type { LatLngLiteral, LeafletMouseEvent } from "leaflet";
 import type { LocationOption } from "../../types/weather";
 import styles from "./LocationSearch.module.scss";
 
@@ -9,26 +10,18 @@ interface LocationSearchProps {
   onLocationSelect: (location: LocationOption) => void;
 }
 
-function parseCoordinates(input: string): { latitude: number; longitude: number } | null {
-  const [latRaw, lonRaw] = input.split(",").map((value) => value.trim());
-  if (!latRaw || !lonRaw) {
-    return null;
-  }
+interface MapClickHandlerProps {
+  onPickLocation: (point: LatLngLiteral) => void;
+}
 
-  const latitude = Number(latRaw);
-  const longitude = Number(lonRaw);
-  if (
-    Number.isNaN(latitude) ||
-    Number.isNaN(longitude) ||
-    latitude < -90 ||
-    latitude > 90 ||
-    longitude < -180 ||
-    longitude > 180
-  ) {
-    return null;
-  }
+function MapClickHandler({ onPickLocation }: MapClickHandlerProps) {
+  useMapEvents({
+    click(event: LeafletMouseEvent) {
+      onPickLocation(event.latlng);
+    }
+  });
 
-  return { latitude, longitude };
+  return null;
 }
 
 export function LocationSearch({
@@ -37,6 +30,7 @@ export function LocationSearch({
   onLocationSelect
 }: LocationSearchProps) {
   const [searchText, setSearchText] = useState("");
+  const [selectedPoint, setSelectedPoint] = useState<LatLngLiteral | null>(null);
 
   // memoization would be necessary when locations list grows long
   const matchedLocations = useMemo(
@@ -47,39 +41,32 @@ export function LocationSearch({
     [locations, searchText]
   );
 
-  function handleCoordinateSubmit(event: SyntheticEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const parsed = parseCoordinates(searchText);
-    if (!parsed) {
-      return;
-    }
+  function handleMapPick(point: LatLngLiteral) {
+    setSelectedPoint(point);
+    const latitude = Number(point.lat.toFixed(4));
+    const longitude = Number(point.lng.toFixed(4));
 
     onLocationSelect({
-      id: `custom-${parsed.latitude}-${parsed.longitude}`,
-      name: `Custom (${parsed.latitude.toFixed(2)}, ${parsed.longitude.toFixed(2)})`,
+      id: `custom-${latitude}-${longitude}`,
+      name: `Custom (${latitude.toFixed(2)}, ${longitude.toFixed(2)})`,
       timezone: "auto", // "auto" for API timezone detection; UI uses timezone returned in weather response
-      ...parsed
+      latitude,
+      longitude
     });
   }
 
   return (
     <section className={styles.searchSection}>
       <label htmlFor="location-search" className={styles.label}>
-        Search city preset or type coordinates (lat,lon)
+        Search city preset
       </label>
-      <form onSubmit={handleCoordinateSubmit} className={styles.form}>
-        <input
-          id="location-search"
-          className={styles.input}
-          value={searchText}
-          onChange={(event) => setSearchText(event.target.value)}
-          placeholder="e.g. London or 60.17,24.94"
-        />
-        <button type="submit" className={styles.submitButton}>
-          Use coordinates
-        </button>
-      </form>
-
+      <input
+        id="location-search"
+        className={styles.input}
+        value={searchText}
+        onChange={(event) => setSearchText(event.target.value)}
+        placeholder="e.g. London"
+      />
       <div className={styles.buttons}>
         {matchedLocations.map((location) => (
           <button
@@ -92,6 +79,21 @@ export function LocationSearch({
           </button>
         ))}
       </div>
+
+      <p className={styles.label}>Or pick a location from the map</p>
+      <MapContainer
+        center={[60.1699, 24.9384]}
+        zoom={5}
+        scrollWheelZoom
+        style={{ height: "16rem", width: "100%", marginTop: "0.5rem", borderRadius: "0.5rem" }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <MapClickHandler onPickLocation={handleMapPick} />
+        {selectedPoint && <Marker position={selectedPoint} />}
+      </MapContainer>
     </section>
   );
 }
