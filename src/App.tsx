@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PRESET_LOCATIONS } from "./constants/locations";
+import { DEFAULT_LOCATION } from "./constants/locations";
 import { fetchWeather } from "./services/openMeteoClient";
 import type {
   ForecastView,
@@ -15,8 +15,6 @@ import { LoadingState } from "./components/LoadingState/LoadingState";
 import { LocationChoice } from "./components/LocationChoice/LocationChoice/LocationChoice";
 import { UnitToggle } from "./components/UnitToggle/UnitToggle";
 import styles from "./App.module.scss";
-
-const DEFAULT_LOCATION = PRESET_LOCATIONS[0];
 
 export default function App() {
   const [selectedLocation, setSelectedLocation] =
@@ -76,8 +74,6 @@ export default function App() {
         </header>
 
         <LocationChoice
-          locations={PRESET_LOCATIONS}
-          activeLocationId={selectedLocation.id}
           onLocationSelect={setSelectedLocation}
         />
 

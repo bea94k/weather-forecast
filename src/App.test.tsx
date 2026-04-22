@@ -4,12 +4,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 import type { WeatherViewModel } from "./types/weather";
 import { fetchWeather } from "./services/openMeteoClient";
+import { fetchLocationSuggestions } from "./services/openMeteoGeocodingClient";
 
 vi.mock("./services/openMeteoClient", () => ({
   fetchWeather: vi.fn()
 }));
+vi.mock("./services/openMeteoGeocodingClient", () => ({
+  fetchLocationSuggestions: vi.fn()
+}));
 
 const mockFetchWeather = vi.mocked(fetchWeather);
+const mockFetchLocationSuggestions = vi.mocked(fetchLocationSuggestions);
 
 const mockWeather: WeatherViewModel = {
   timezone: "Europe/Helsinki",
@@ -34,6 +39,7 @@ const mockWeather: WeatherViewModel = {
 describe("App", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockFetchLocationSuggestions.mockResolvedValue([]);
   });
   afterEach(() => {
     cleanup();
@@ -86,6 +92,15 @@ describe("App", () => {
 
   it("refetches when selecting another location from search", async () => {
     mockFetchWeather.mockResolvedValue(mockWeather);
+    mockFetchLocationSuggestions.mockResolvedValue([
+      {
+        id: "geocode-2643743",
+        name: "London, England, United Kingdom",
+        latitude: 51.5085,
+        longitude: -0.1257,
+        timezone: "Europe/London"
+      }
+    ]);
     const user = userEvent.setup();
     render(<App />);
     await screen.findByRole("heading", { name: "Helsinki" });
@@ -94,11 +109,14 @@ describe("App", () => {
     expect(locationForm).not.toBeNull();
 
     await user.type(screen.getByLabelText("Search for a city"), "London");
+    await screen.findByRole("button", {
+      name: "London, England, United Kingdom"
+    });
     await user.click(within(locationForm!).getByRole("button", { name: "Search" }));
 
     await waitFor(() => {
       expect(mockFetchWeather).toHaveBeenLastCalledWith(
-        expect.objectContaining({ id: "london" }),
+        expect.objectContaining({ id: "geocode-2643743" }),
         "celsius"
       );
     });

@@ -6,17 +6,12 @@ import { LocationSearch } from "../LocationSearch/LocationSearch";
 import styles from "./LocationChoice.module.scss";
 
 interface LocationChoiceProps {
-  locations: LocationOption[];
-  activeLocationId: string;
   onLocationSelect: (location: LocationOption) => void;
 }
 
 type LocationInputMode = "search" | "map";
 
-export function LocationChoice({
-  locations,
-  onLocationSelect
-}: LocationChoiceProps) {
+export function LocationChoice({ onLocationSelect }: LocationChoiceProps) {
   const [inputMode, setInputMode] = useState<LocationInputMode>("search");
 
   return (
@@ -26,7 +21,7 @@ export function LocationChoice({
         <LocationModeToggle value={inputMode} onChange={setInputMode} />
 
         {inputMode === "search" && (
-          <LocationSearch locations={locations} onLocationSelect={onLocationSelect} />
+          <LocationSearch onLocationSelect={onLocationSelect} />
         )}
 
         {inputMode === "map" && (

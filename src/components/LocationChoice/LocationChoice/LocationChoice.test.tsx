@@ -27,11 +27,6 @@ vi.mock("../LocationMapPicker/LocationMapPicker", () => ({
   )
 }));
 
-const locations: LocationOption[] = [
-  { id: "helsinki", name: "Helsinki", latitude: 60.1699, longitude: 24.9384, timezone: "Europe/Helsinki" },
-  { id: "london", name: "London", latitude: 51.5072, longitude: -0.1276, timezone: "Europe/London" }
-];
-
 describe("LocationChoice", () => {
   afterEach(() => {
     cleanup();
@@ -40,8 +35,6 @@ describe("LocationChoice", () => {
   it("shows search mode by default", () => {
     render(
       <LocationChoice
-        locations={locations}
-        activeLocationId="helsinki"
         onLocationSelect={() => undefined}
       />
     );
@@ -55,8 +48,6 @@ describe("LocationChoice", () => {
 
     render(
       <LocationChoice
-        locations={locations}
-        activeLocationId="helsinki"
         onLocationSelect={onLocationSelect}
       />
     );
