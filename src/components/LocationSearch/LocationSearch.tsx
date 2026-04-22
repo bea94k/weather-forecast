@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
-import { MapContainer, Marker, TileLayer, useMapEvents } from "react-leaflet";
-import type { LatLngLiteral, LeafletMouseEvent } from "leaflet";
+import { useState } from "react";
+import type { FormEvent } from "react";
 import type { LocationOption } from "../../types/weather";
+import { LocationInputModeToggle } from "./LocationInputModeToggle";
+import { LocationMapPicker } from "./LocationMapPicker";
 import styles from "./LocationSearch.module.scss";
 
 interface LocationSearchProps {
@@ -10,65 +11,26 @@ interface LocationSearchProps {
   onLocationSelect: (location: LocationOption) => void;
 }
 
-interface MapClickHandlerProps {
-  onPickLocation: (point: LatLngLiteral) => void;
-}
-
-function MapClickHandler({ onPickLocation }: MapClickHandlerProps) {
-  useMapEvents({
-    click(event: LeafletMouseEvent) {
-      onPickLocation(event.latlng);
-    }
-  });
-
-  return null;
-}
+type LocationInputMode = "search" | "map";
 
 export function LocationSearch({
   locations,
   activeLocationId,
   onLocationSelect
 }: LocationSearchProps) {
-  const [searchText, setSearchText] = useState("");
-  const [selectedPoint, setSelectedPoint] = useState<LatLngLiteral | null>(null);
+  const [manualCityQuery, setManualCityQuery] = useState("");
+  const [inputMode, setInputMode] = useState<LocationInputMode>("search");
 
-  // memoization would be necessary when locations list grows long
-  const matchedLocations = useMemo(
-    () =>
-      locations.filter((location) =>
-        location.name.toLowerCase().includes(searchText.trim().toLowerCase())
-      ),
-    [locations, searchText]
-  );
-
-  function handleMapPick(point: LatLngLiteral) {
-    setSelectedPoint(point);
-    const latitude = Number(point.lat.toFixed(4));
-    const longitude = Number(point.lng.toFixed(4));
-
-    onLocationSelect({
-      id: `custom-${latitude}-${longitude}`,
-      name: `Custom (${latitude.toFixed(2)}, ${longitude.toFixed(2)})`,
-      timezone: "auto", // "auto" for API timezone detection; UI uses timezone returned in weather response
-      latitude,
-      longitude
-    });
+  function handleManualCitySubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    // Placeholder only; manual city search logic is intentionally not implemented yet.
   }
 
   return (
     <section className={styles.searchSection}>
-      <label htmlFor="location-search" className={styles.label}>
-        Search city preset
-      </label>
-      <input
-        id="location-search"
-        className={styles.input}
-        value={searchText}
-        onChange={(event) => setSearchText(event.target.value)}
-        placeholder="e.g. London"
-      />
+      <p className={styles.label}>Popular</p>
       <div className={styles.buttons}>
-        {matchedLocations.map((location) => (
+        {locations.map((location) => (
           <button
             key={location.id}
             type="button"
@@ -80,20 +42,30 @@ export function LocationSearch({
         ))}
       </div>
 
-      <p className={styles.label}>Or pick a location from the map</p>
-      <MapContainer
-        center={[60.1699, 24.9384]}
-        zoom={5}
-        scrollWheelZoom
-        style={{ height: "16rem", width: "100%", marginTop: "0.5rem", borderRadius: "0.5rem" }}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
-        <MapClickHandler onPickLocation={handleMapPick} />
-        {selectedPoint && <Marker position={selectedPoint} />}
-      </MapContainer>
+      <p className={styles.label}>Choose location input mode</p>
+      <LocationInputModeToggle value={inputMode} onChange={setInputMode} />
+
+      {inputMode === "search" && (
+        <form onSubmit={handleManualCitySubmit} className={styles.form}>
+          <label htmlFor="manual-city-search" className={styles.visuallyHidden}>
+            Search for a city
+          </label>
+          <input
+            id="manual-city-search"
+            className={styles.input}
+            value={manualCityQuery}
+            onChange={(event) => setManualCityQuery(event.target.value)}
+            placeholder="Type city name"
+          />
+          <button type="submit" className={styles.submitButton}>
+            Search
+          </button>
+        </form>
+      )}
+
+      {inputMode === "map" && (
+        <LocationMapPicker onLocationSelect={onLocationSelect} />
+      )}
     </section>
   );
 }
