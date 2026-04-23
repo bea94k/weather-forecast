@@ -130,4 +130,26 @@ describe("LocationSearch", () => {
     await user.keyboard("{ArrowDown}");
     expect(input).toHaveAttribute("aria-activedescendant", "location-option-geocode-5128581");
   });
+
+  it("shows empty-state feedback when there are no matches", async () => {
+    const user = userEvent.setup();
+    mockFetchLocationSuggestions.mockResolvedValue([]);
+
+    render(<LocationSearch onLocationSelect={() => undefined} />);
+
+    await user.type(screen.getByLabelText("Search for a city"), "xx");
+
+    expect(await screen.findByText("No matches found.")).toBeInTheDocument();
+  });
+
+  it("shows error feedback when suggestion fetch fails", async () => {
+    const user = userEvent.setup();
+    mockFetchLocationSuggestions.mockRejectedValue(new Error("Service unavailable"));
+
+    render(<LocationSearch onLocationSelect={() => undefined} />);
+
+    await user.type(screen.getByLabelText("Search for a city"), "berlin");
+
+    expect(await screen.findByText("Could not load location suggestions.")).toBeInTheDocument();
+  });
 });

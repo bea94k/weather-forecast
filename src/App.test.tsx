@@ -121,4 +121,35 @@ describe("App", () => {
       );
     });
   });
+
+  it("refetches when selecting a suggestion with keyboard enter", async () => {
+    mockFetchWeather.mockResolvedValue(mockWeather);
+    mockFetchLocationSuggestions.mockResolvedValue([
+      {
+        id: "geocode-5128581",
+        name: "New York, New York, United States",
+        latitude: 40.7143,
+        longitude: -74.006,
+        timezone: "America/New_York"
+      }
+    ]);
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByRole("heading", { name: "Helsinki" });
+
+    const input = screen.getByLabelText("Search for a city");
+    await user.type(input, "Ne");
+    await screen.findByRole("option", {
+      name: "New York, New York, United States"
+    });
+    await user.keyboard("{ArrowDown}");
+    await user.keyboard("{Enter}");
+
+    await waitFor(() => {
+      expect(mockFetchWeather).toHaveBeenLastCalledWith(
+        expect.objectContaining({ id: "geocode-5128581" }),
+        "celsius"
+      );
+    });
+  });
 });
