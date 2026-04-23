@@ -109,7 +109,7 @@ describe("App", () => {
     expect(locationForm).not.toBeNull();
 
     await user.type(screen.getByLabelText("Search for a city"), "London");
-    await screen.findByRole("button", {
+    await screen.findByRole("option", {
       name: "London, England, United Kingdom"
     });
     await user.click(within(locationForm!).getByRole("button", { name: "Search" }));

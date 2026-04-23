@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import type { FormEvent, KeyboardEvent } from "react";
 import type { LocationOption } from "../../../types/weather";
 import { fetchLocationSuggestions } from "../../../services/openMeteoGeocodingClient";
-import styles from "./LocationSearch.module.scss";
+import { LocationCombobox } from "./LocationCombobox";
 
 interface LocationSearchProps {
   onLocationSelect: (location: LocationOption) => void;
@@ -19,8 +18,19 @@ export function LocationSearch({
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [suggestionsError, setSuggestionsError] = useState<string | null>(null);
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState<number | null>(
+    null
+  );
 
   const normalizedQuery = manualCityQuery.trim().toLowerCase();
+  const isListboxOpen =
+    isSuggestionsOpen && normalizedQuery.length >= MIN_QUERY_LENGTH;
+  const activeSuggestion =
+    activeSuggestionIndex !== null ? suggestions[activeSuggestionIndex] : null;
+  const activeOptionId = activeSuggestion
+    ? `location-option-${activeSuggestion.id}`
+    : undefined;
+
   useEffect(() => {
     if (normalizedQuery.length < MIN_QUERY_LENGTH) {
       return;
@@ -34,6 +44,7 @@ export function LocationSearch({
           signal: abortController.signal
         });
         setSuggestions(nextSuggestions);
+        setActiveSuggestionIndex(null);
       } catch (error) {
         // Ignore cancellation errors to avoid flashing an error while typing.
         if (error instanceof DOMException && error.name === "AbortError") {
@@ -54,31 +65,27 @@ export function LocationSearch({
     };
   }, [normalizedQuery]);
 
-  function handleManualCitySubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  function handleManualCitySubmit() {
     if (!normalizedQuery) {
       return;
     }
 
-    const [firstSuggestion] = suggestions;
+    const selectedSuggestion =
+      activeSuggestionIndex !== null ? suggestions[activeSuggestionIndex] : suggestions[0];
 
-    if (firstSuggestion) {
-      onLocationSelect(firstSuggestion);
-      setManualCityQuery(firstSuggestion.name);
+    if (selectedSuggestion) {
+      onLocationSelect(selectedSuggestion);
+      setManualCityQuery(selectedSuggestion.name);
       setIsSuggestionsOpen(false);
+      setActiveSuggestionIndex(null);
     }
   }
 
   function handleSuggestionSelect(location: LocationOption) {
     onLocationSelect(location);
-    setManualCityQuery(location.name); // re-runs the geocoding, but also fills the input with the chosen option
+    setManualCityQuery(location.name);
     setIsSuggestionsOpen(false);
-  }
-
-  function handleInputKeyDown(event: KeyboardEvent<HTMLInputElement>) {
-    if (event.key === "Escape") {
-      setIsSuggestionsOpen(false);
-    }
+    setActiveSuggestionIndex(null);
   }
 
   function handleInputChange(nextQuery: string) {
@@ -88,6 +95,7 @@ export function LocationSearch({
       setSuggestions([]);
       setSuggestionsError(null);
       setIsLoadingSuggestions(false);
+      setActiveSuggestionIndex(null);
     } else {
       setIsLoadingSuggestions(true);
       setSuggestionsError(null);
@@ -96,54 +104,37 @@ export function LocationSearch({
     setIsSuggestionsOpen(true);
   }
 
+  function handleCloseSuggestions() {
+    setIsSuggestionsOpen(false);
+    setActiveSuggestionIndex(null);
+  }
+
+  function handleClearInput() {
+    setManualCityQuery("");
+    setSuggestions([]);
+    setSuggestionsError(null);
+    setIsLoadingSuggestions(false);
+    setActiveSuggestionIndex(null);
+  }
+
   return (
-    <form onSubmit={handleManualCitySubmit} className={styles.form}>
-      <label htmlFor="manual-city-search" className={styles.visuallyHidden}>
-        Search for a city
-      </label>
-      <div className={styles.inputGroup}>
-        <input
-          id="manual-city-search"
-          className={styles.input}
-          value={manualCityQuery}
-          onChange={(event) => handleInputChange(event.target.value)}
-          onFocus={() => setIsSuggestionsOpen(true)}
-          onKeyDown={handleInputKeyDown}
-          placeholder="Type city name"
-          autoComplete="off"
-          aria-expanded={isSuggestionsOpen}
-          aria-controls="location-suggestion-list"
-        />
-        {isSuggestionsOpen && normalizedQuery.length >= MIN_QUERY_LENGTH && (
-          <div id="location-suggestion-list" className={styles.suggestionPanel}>
-            {isLoadingSuggestions && <p className={styles.statusText}>Loading suggestions...</p>}
-            {!isLoadingSuggestions && suggestionsError && (
-              <p className={styles.statusText}>{suggestionsError}</p>
-            )}
-            {!isLoadingSuggestions && !suggestionsError && suggestions.length === 0 && (
-              <p className={styles.statusText}>No matches found.</p>
-            )}
-            {!isLoadingSuggestions && !suggestionsError && suggestions.length > 0 && (
-              <ul className={styles.suggestionList}>
-                {suggestions.map((location) => (
-                  <li key={location.id}>
-                    <button
-                      type="button"
-                      className={styles.suggestionButton}
-                      onClick={() => handleSuggestionSelect(location)}
-                    >
-                      {location.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-      </div>
-      <button type="submit" className={styles.submitButton}>
-        Search
-      </button>
-    </form>
+    <LocationCombobox
+      query={manualCityQuery}
+      normalizedQuery={normalizedQuery}
+      suggestions={suggestions}
+      isLoadingSuggestions={isLoadingSuggestions}
+      suggestionsError={suggestionsError}
+      isListboxOpen={isListboxOpen}
+      activeSuggestionIndex={activeSuggestionIndex}
+      activeOptionId={activeOptionId}
+      minQueryLength={MIN_QUERY_LENGTH}
+      onQueryChange={handleInputChange}
+      onOpen={() => setIsSuggestionsOpen(true)}
+      onClose={handleCloseSuggestions}
+      onClear={handleClearInput}
+      onActiveSuggestionIndexChange={setActiveSuggestionIndex}
+      onSuggestionSelect={handleSuggestionSelect}
+      onSubmit={handleManualCitySubmit}
+    />
   );
 }

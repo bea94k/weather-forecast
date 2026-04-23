@@ -51,11 +51,12 @@ describe("LocationSearch", () => {
 
     render(<LocationSearch onLocationSelect={onLocationSelect} />);
 
-    await user.type(screen.getByLabelText("Search for a city"), "Pa");
-    const suggestionButton = await screen.findByRole("button", {
+    const input = screen.getByLabelText("Search for a city");
+    await user.type(input, "Pa");
+    const suggestionOption = await screen.findByRole("option", {
       name: "Paris, Ile-de-France, France"
     });
-    await user.click(suggestionButton);
+    await user.click(suggestionOption);
 
     expect(onLocationSelect).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -81,7 +82,7 @@ describe("LocationSearch", () => {
 
     const input = screen.getByLabelText("Search for a city");
     await user.type(input, "Lo");
-    await screen.findByRole("button", {
+    await screen.findByRole("option", {
       name: "London, England, United Kingdom"
     });
 
@@ -96,5 +97,37 @@ describe("LocationSearch", () => {
         })
       );
     });
+  });
+
+  it("supports arrow key navigation with active descendant", async () => {
+    const user = userEvent.setup();
+    mockFetchLocationSuggestions.mockResolvedValue([
+      {
+        id: "geocode-2643743",
+        name: "London, England, United Kingdom",
+        latitude: 51.5085,
+        longitude: -0.1257,
+        timezone: "Europe/London"
+      },
+      {
+        id: "geocode-5128581",
+        name: "New York, New York, United States",
+        latitude: 40.7143,
+        longitude: -74.006,
+        timezone: "America/New_York"
+      }
+    ]);
+
+    render(<LocationSearch onLocationSelect={() => undefined} />);
+
+    const input = screen.getByLabelText("Search for a city");
+    await user.type(input, "Ne");
+    await screen.findByRole("option", { name: "New York, New York, United States" });
+
+    await user.keyboard("{ArrowDown}");
+    expect(input).toHaveAttribute("aria-activedescendant", "location-option-geocode-2643743");
+
+    await user.keyboard("{ArrowDown}");
+    expect(input).toHaveAttribute("aria-activedescendant", "location-option-geocode-5128581");
   });
 });
