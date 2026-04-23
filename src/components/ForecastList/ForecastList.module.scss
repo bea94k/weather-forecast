@@ -39,7 +39,7 @@
     font-weight: 700;
   }
 
-  span:last-child {
+  > span:last-child {
     text-align: right;
     color: var(--color-text-muted);
     font-size: 0.9rem;
@@ -56,8 +56,15 @@
       text-align: left;
     }
 
-    span:last-child {
+    > span:last-child {
       text-align: left;
     }
   }
+}
+
+.conditionWithIcon {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }

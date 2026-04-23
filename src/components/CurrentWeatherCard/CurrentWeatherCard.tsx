@@ -1,5 +1,10 @@
 import type { CurrentWeather, LocationOption } from "../../types/weather";
-import { formatDay, formatTemperature, weatherCodeToLabel } from "../../utils/formatters";
+import {
+  formatDay,
+  formatTemperature,
+  weatherCodeToIcon,
+  weatherCodeToLabel
+} from "../../utils/formatters";
 import styles from "./CurrentWeatherCard.module.scss";
 
 interface CurrentWeatherCardProps {
@@ -15,10 +20,21 @@ export function CurrentWeatherCard({
   current,
   unitSymbol
 }: CurrentWeatherCardProps) {
+  const conditionIcon = weatherCodeToIcon(current.weatherCode);
+
   return (
     <section className={styles.card}>
-      <h2>{location.name}</h2>
-      <p className={styles.time}>{formatDay(current.time, timezone)}</p>
+      <div className={styles.topRow}>
+        <div className={styles.locationMeta}>
+          <h2>{location.name}</h2>
+          <p className={styles.time}>{formatDay(current.time, timezone)}</p>
+        </div>
+        {conditionIcon && (
+          <span aria-hidden="true" className={styles.topRightIcon}>
+            {conditionIcon}
+          </span>
+        )}
+      </div>
       <p className={styles.temperature}>{formatTemperature(current.temperature, unitSymbol)}</p>
       <p className={styles.description}>{weatherCodeToLabel(current.weatherCode)}</p>
       <dl className={styles.stats}>

@@ -7,6 +7,7 @@ import {
   formatDay,
   formatHour,
   formatTemperature,
+  weatherCodeToIcon,
   weatherCodeToLabel
 } from "../../utils/formatters";
 import styles from "./ForecastList.module.scss";
@@ -32,12 +33,14 @@ export function ForecastList({
           key: point.time,
           label: formatHour(point.time, timezone),
           temperatureText: formatTemperature(point.temperature, unitSymbol),
+          conditionIcon: weatherCodeToIcon(point.weatherCode),
           conditionText: weatherCodeToLabel(point.weatherCode)
         }))
       : daily.map((point) => ({
           key: point.time,
           label: formatDay(point.time, timezone),
           temperatureText: `${formatTemperature(point.minTemperature, unitSymbol)} - ${formatTemperature(point.maxTemperature, unitSymbol)}`,
+          conditionIcon: weatherCodeToIcon(point.weatherCode),
           conditionText: weatherCodeToLabel(point.weatherCode)
         }));
 
@@ -49,7 +52,10 @@ export function ForecastList({
           <li key={item.key} className={styles.item}>
             <span>{item.label}</span>
             <strong>{item.temperatureText}</strong>
-            <span>{item.conditionText}</span>
+            <span className={styles.conditionWithIcon}>
+              {item.conditionIcon && <span aria-hidden="true">{item.conditionIcon}</span>}
+              <span>{item.conditionText}</span>
+            </span>
           </li>
         ))}
       </ul>
