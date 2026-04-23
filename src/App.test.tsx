@@ -105,10 +105,10 @@ describe("App", () => {
     render(<App />);
     await screen.findByRole("heading", { name: "Helsinki" });
 
-    const locationForm = screen.getByLabelText("Search for a city").closest("form");
+    const locationForm = screen.getByLabelText("Start typing to see suggestions").closest("form");
     expect(locationForm).not.toBeNull();
 
-    await user.type(screen.getByLabelText("Search for a city"), "London");
+    await user.type(screen.getByLabelText("Start typing to see suggestions"), "London");
     await screen.findByRole("option", {
       name: "London, England, United Kingdom"
     });
@@ -137,7 +137,7 @@ describe("App", () => {
     render(<App />);
     await screen.findByRole("heading", { name: "Helsinki" });
 
-    const input = screen.getByLabelText("Search for a city");
+    const input = screen.getByLabelText("Start typing to see suggestions");
     await user.type(input, "Ne");
     await screen.findByRole("option", {
       name: "New York, New York, United States"

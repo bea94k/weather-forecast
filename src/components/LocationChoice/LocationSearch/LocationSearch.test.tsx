@@ -24,7 +24,7 @@ describe("LocationSearch", () => {
     const user = userEvent.setup();
     render(<LocationSearch onLocationSelect={() => undefined} />);
 
-    await user.type(screen.getByLabelText("Search for a city"), "Paris");
+    await user.type(screen.getByLabelText("Start typing to see suggestions"), "Paris");
 
     await waitFor(() => {
       expect(mockFetchLocationSuggestions).toHaveBeenCalledWith(
@@ -51,7 +51,7 @@ describe("LocationSearch", () => {
 
     render(<LocationSearch onLocationSelect={onLocationSelect} />);
 
-    const input = screen.getByLabelText("Search for a city");
+    const input = screen.getByLabelText("Start typing to see suggestions");
     await user.type(input, "Pa");
     const suggestionOption = await screen.findByRole("option", {
       name: "Paris, Ile-de-France, France"
@@ -80,7 +80,7 @@ describe("LocationSearch", () => {
 
     render(<LocationSearch onLocationSelect={onLocationSelect} />);
 
-    const input = screen.getByLabelText("Search for a city");
+    const input = screen.getByLabelText("Start typing to see suggestions");
     await user.type(input, "Lo");
     await screen.findByRole("option", {
       name: "London, England, United Kingdom"
@@ -120,7 +120,7 @@ describe("LocationSearch", () => {
 
     render(<LocationSearch onLocationSelect={() => undefined} />);
 
-    const input = screen.getByLabelText("Search for a city");
+    const input = screen.getByLabelText("Start typing to see suggestions");
     await user.type(input, "Ne");
     await screen.findByRole("option", { name: "New York, New York, United States" });
 
@@ -137,7 +137,7 @@ describe("LocationSearch", () => {
 
     render(<LocationSearch onLocationSelect={() => undefined} />);
 
-    await user.type(screen.getByLabelText("Search for a city"), "xx");
+    await user.type(screen.getByLabelText("Start typing to see suggestions"), "xx");
 
     expect(await screen.findByText("No matches found.")).toBeInTheDocument();
   });
@@ -148,7 +148,7 @@ describe("LocationSearch", () => {
 
     render(<LocationSearch onLocationSelect={() => undefined} />);
 
-    await user.type(screen.getByLabelText("Search for a city"), "berlin");
+    await user.type(screen.getByLabelText("Start typing to see suggestions"), "berlin");
 
     expect(await screen.findByText("Could not load location suggestions.")).toBeInTheDocument();
   });

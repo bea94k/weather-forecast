@@ -39,7 +39,7 @@ describe("LocationChoice", () => {
       />
     );
 
-    expect(screen.getByLabelText("Search for a city")).toBeInTheDocument();
+    expect(screen.getByLabelText("Start typing to see suggestions")).toBeInTheDocument();
   });
 
   it("uses map picker selection in map mode", async () => {

@@ -7,6 +7,11 @@
   align-items: flex-start;
 }
 
+.fieldLabel {
+  display: block;
+  width: 100%;
+}
+
 .inputGroup {
   position: relative;
   flex: 1;
@@ -88,6 +93,7 @@
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-weight: 600;
+  margin-left: auto;
 
   &:hover {
     background: var(--color-action-primary-hover);

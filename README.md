@@ -7,7 +7,7 @@ Live at [https://bea94k.github.io/weather-forecast/](https://bea94k.github.io/we
 ## Features
 
 - Location choice with two modes:
-  - Search by city name with preset suggestions (Helsinki, London, New York, Tokyo)
+  - Search by city name with live suggestions
   - Interactive map click selection for custom coordinates
 - Current weather for a selected location (temperature, feels-like, humidity, wind speed, weather conditions)
 - Hourly forecast (next 12 hours)

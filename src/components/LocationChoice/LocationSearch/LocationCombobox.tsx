@@ -43,6 +43,8 @@ export function LocationCombobox({
   onSubmit
 }: LocationComboboxProps) {
   const optionRefs = useRef<Record<string, HTMLLIElement | null>>({});
+  const hasSuggestionResults =
+    !isLoadingSuggestions && !suggestionsError && suggestions.length > 0;
 
   useEffect(() => {
     if (!activeOptionId) {
@@ -120,8 +122,8 @@ export function LocationCombobox({
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
-      <label htmlFor="manual-city-search" className={styles.visuallyHidden}>
-        Search for a city
+      <label htmlFor="manual-city-search" className={styles.fieldLabel}>
+        Start typing to see suggestions
       </label>
       <div className={styles.inputGroup}>
         <input
@@ -132,7 +134,6 @@ export function LocationCombobox({
           onChange={(event) => onQueryChange(event.target.value)}
           onFocus={onOpen}
           onKeyDown={handleInputKeyDown}
-          placeholder="Type city name"
           autoComplete="off"
           aria-autocomplete="list"
           aria-haspopup="listbox"
@@ -143,14 +144,15 @@ export function LocationCombobox({
         />
         {isListboxOpen && normalizedQuery.length >= minQueryLength && (
           <div className={styles.suggestionPanel}>
-            {isLoadingSuggestions && <p className={styles.statusText}>Loading suggestions...</p>}
-            {!isLoadingSuggestions && suggestionsError && (
-              <p className={styles.statusText}>{suggestionsError}</p>
-            )}
-            {!isLoadingSuggestions && !suggestionsError && suggestions.length === 0 && (
-              <p className={styles.statusText}>No matches found.</p>
-            )}
-            {!isLoadingSuggestions && !suggestionsError && suggestions.length > 0 && (
+            <p className={hasSuggestionResults ? styles.visuallyHidden : styles.statusText} role="status">
+              {isLoadingSuggestions && "Loading suggestions..."}
+              {!isLoadingSuggestions && suggestionsError && suggestionsError}
+              {!isLoadingSuggestions && !suggestionsError && suggestions.length === 0 && "No matches found."}
+              {hasSuggestionResults && (
+                `${suggestions.length} location suggestions available.`
+              )}
+            </p>
+            {hasSuggestionResults && (
               <ul
                 id="location-suggestion-list"
                 className={styles.suggestionList}
