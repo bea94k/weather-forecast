@@ -13,7 +13,6 @@ import {
 import styles from "./ForecastList.module.scss";
 
 interface ForecastListProps {
-  timezone: string;
   view: ForecastView;
   hourly: HourlyForecastPoint[];
   daily: DailyForecastPoint[];
@@ -21,7 +20,6 @@ interface ForecastListProps {
 }
 
 export function ForecastList({
-  timezone,
   view,
   hourly,
   daily,
@@ -31,14 +29,14 @@ export function ForecastList({
     view === "hourly"
       ? hourly.map((point) => ({
           key: point.time,
-          label: formatHour(point.time, timezone),
+          label: formatHour(point.time),
           temperatureText: formatTemperature(point.temperature, unitSymbol),
           conditionIcon: weatherCodeToIcon(point.weatherCode),
           conditionText: weatherCodeToLabel(point.weatherCode)
         }))
       : daily.map((point) => ({
           key: point.time,
-          label: formatDay(point.time, timezone),
+          label: formatDay(point.time),
           temperatureText: `${formatTemperature(point.minTemperature, unitSymbol)} - ${formatTemperature(point.maxTemperature, unitSymbol)}`,
           conditionIcon: weatherCodeToIcon(point.weatherCode),
           conditionText: weatherCodeToLabel(point.weatherCode)

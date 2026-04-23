@@ -54,19 +54,17 @@ export function formatTemperature(value: number, unitSymbol: "C" | "F"): string 
   return `${Math.round(value)}°${unitSymbol}`;
 }
 
-export function formatHour(isoDate: string, timezone: string): string {
+export function formatHour(dateTime: string): string {
   return new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
-    minute: "2-digit",
-    timeZone: timezone
-  }).format(new Date(isoDate));
+    minute: "2-digit"
+  }).format(new Date(dateTime));
 }
 
-export function formatDay(isoDate: string, timezone: string): string {
+export function formatDay(dateTime: string): string {
   return new Intl.DateTimeFormat("en-US", {
     weekday: "short",
     day: "numeric",
-    month: "short",
-    timeZone: timezone
-  }).format(new Date(isoDate));
+    month: "short"
+  }).format(new Date(dateTime));
 }

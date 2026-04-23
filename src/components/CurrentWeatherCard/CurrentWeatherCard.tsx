@@ -10,14 +10,12 @@ import styles from "./CurrentWeatherCard.module.scss";
 
 interface CurrentWeatherCardProps {
   location: LocationOption;
-  timezone: string;
   current: CurrentWeather;
   unitSymbol: "C" | "F";
 }
 
 export function CurrentWeatherCard({
   location,
-  timezone,
   current,
   unitSymbol
 }: CurrentWeatherCardProps) {
@@ -29,7 +27,7 @@ export function CurrentWeatherCard({
         <div className={styles.locationMeta}>
           <h2>{location.name}</h2>
           <p className={styles.time}>
-            {formatDay(current.time, timezone)} at {formatHour(current.time, timezone)}
+            {formatDay(current.time)} at {formatHour(current.time)}
           </p>
         </div>
         {conditionIcon && (

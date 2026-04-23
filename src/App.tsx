@@ -88,12 +88,10 @@ export default function App() {
           <section className={styles.content}>
             <CurrentWeatherCard
               location={selectedLocation}
-              timezone={weather.timezone}
               current={weather.current}
               unitSymbol={unitSymbol}
             />
             <ForecastList
-              timezone={weather.timezone}
               view={view}
               hourly={weather.hourly}
               daily={weather.daily}
