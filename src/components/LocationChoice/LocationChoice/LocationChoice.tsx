@@ -16,9 +16,10 @@ export function LocationChoice({ onLocationSelect }: LocationChoiceProps) {
 
   return (
     <section className={styles.searchSection}>
-      <div className={styles.group}>
-        <p className={styles.label}>Location</p>
+      <div className={styles.tabsRow}>
         <LocationModeToggle value={inputMode} onChange={setInputMode} />
+      </div>
+      <div className={styles.group}>
 
         {inputMode === "search" && (
           <LocationSearch onLocationSelect={onLocationSelect} />
