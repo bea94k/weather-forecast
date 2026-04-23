@@ -11,7 +11,8 @@ const COMMON_PARAMS = {
     "temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m",
   hourly: "temperature_2m,weather_code",
   daily: "weather_code,temperature_2m_max,temperature_2m_min",
-  forecast_days: "7"
+  forecast_days: "7",
+  forecast_hours: "12"
 };
 
 function buildUrl(location: LocationOption, unit: TemperatureUnit): URL {

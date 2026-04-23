@@ -38,6 +38,7 @@ const validApiResponse = {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.useRealTimers();
 });
 
 describe("fetchWeather", () => {
@@ -73,6 +74,19 @@ describe("fetchWeather", () => {
 
     const requestedUrl = new URL(String(fetchMock.mock.calls[0][0]));
     expect(requestedUrl.searchParams.get("temperature_unit")).toBe("fahrenheit");
+  });
+
+  it("requests hourly forecast limited to next 12 hours", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue(validApiResponse)
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await fetchWeather(testLocation, "celsius");
+
+    const requestedUrl = new URL(String(fetchMock.mock.calls[0][0]));
+    expect(requestedUrl.searchParams.get("forecast_hours")).toBe("12");
   });
 
   it("throws a friendly error when request fails", async () => {
