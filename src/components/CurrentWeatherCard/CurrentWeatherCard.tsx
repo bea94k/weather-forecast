@@ -1,6 +1,7 @@
 import type { CurrentWeather, LocationOption } from "../../types/weather";
 import {
   formatDay,
+  formatHour,
   formatTemperature,
   weatherCodeToIcon,
   weatherCodeToLabel
@@ -27,7 +28,9 @@ export function CurrentWeatherCard({
       <div className={styles.topRow}>
         <div className={styles.locationMeta}>
           <h2>{location.name}</h2>
-          <p className={styles.time}>{formatDay(current.time, timezone)}</p>
+          <p className={styles.time}>
+            {formatDay(current.time, timezone)} at {formatHour(current.time, timezone)}
+          </p>
         </div>
         {conditionIcon && (
           <span aria-hidden="true" className={styles.topRightIcon}>
