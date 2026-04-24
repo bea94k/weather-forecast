@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { fetchWeather } from "./openMeteoClient";
+import { __clearWeatherCacheForTests, fetchWeather } from "./openMeteoClient";
 import type { LocationOption } from "../types/weather";
 
 const testLocation: LocationOption = {
@@ -37,6 +37,7 @@ const validApiResponse = {
 };
 
 afterEach(() => {
+  __clearWeatherCacheForTests();
   vi.restoreAllMocks();
   vi.useRealTimers();
 });
@@ -115,5 +116,81 @@ describe("fetchWeather", () => {
     await expect(fetchWeather(testLocation, "celsius")).rejects.toThrow(
       "Weather response is missing required fields."
     );
+  });
+
+  it("returns cached weather for repeated identical requests within TTL", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue(validApiResponse)
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const firstReqResult = await fetchWeather(testLocation, "celsius");
+    const secondReqResult = await fetchWeather(testLocation, "celsius");
+
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(secondReqResult).toEqual(firstReqResult);
+  });
+
+  it("re-fetches weather after cache TTL expires", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-04-21T00:00:00.000Z"));
+
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: vi.fn().mockResolvedValue(validApiResponse)
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await fetchWeather(testLocation, "celsius");
+
+    vi.setSystemTime(new Date("2026-04-21T00:10:01.000Z")); // over 10 min later
+    await fetchWeather(testLocation, "celsius");
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("deduplicates in-flight requests with the same cache key", async () => {
+    const fetchMock = vi.fn().mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          setTimeout(() => {
+            resolve({
+              ok: true,
+              json: vi.fn().mockResolvedValue(validApiResponse)
+            });
+          }, 0);
+        })
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const firstRequest = fetchWeather(testLocation, "celsius");
+    const secondRequest = fetchWeather(testLocation, "celsius");
+
+    const [firstReqResult, secondReqResult] = await Promise.all([firstRequest, secondRequest]);
+
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(firstReqResult).toEqual(secondReqResult);
+  });
+
+  it("does not cache failed requests", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: false,
+        json: vi.fn()
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: vi.fn().mockResolvedValue(validApiResponse)
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(fetchWeather(testLocation, "celsius")).rejects.toThrow(
+      "Unable to fetch weather data."
+    );
+    await fetchWeather(testLocation, "celsius");
+
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 });
