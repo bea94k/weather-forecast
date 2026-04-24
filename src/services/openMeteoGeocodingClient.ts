@@ -5,6 +5,15 @@ import type {
 } from "../types/geocoding";
 
 const GEOCODING_BASE_URL = "https://geocoding-api.open-meteo.com/v1/search";
+const LOCATION_CACHE_TTL_MS = 5 * 60 * 1000;
+
+type LocationCacheEntry = {
+  data: LocationOption[];
+  expiresAt: number;
+};
+
+const resolvedLocationCache = new Map<string, LocationCacheEntry>();
+const inFlightLocationRequests = new Map<string, Promise<LocationOption[]>>();
 
 interface FetchLocationSuggestionsOptions {
   signal?: AbortSignal;
@@ -17,6 +26,11 @@ function buildGeocodingUrl(query: string): URL {
   url.searchParams.set("name", trimmedQuery);
 
   return url;
+}
+
+function buildLocationCacheKey(query: string): string {
+  const normalizedQuery = query.toLowerCase();
+  return `geo:${normalizedQuery}`;
 }
 
 function isGeocodingResult(data: unknown): data is OpenMeteoGeocodingResult {
@@ -53,17 +67,54 @@ export async function fetchLocationSuggestions(
     return [];
   }
 
-  const response = await fetch(buildGeocodingUrl(trimmedQuery), {
-    signal: options.signal
-  });
+  const cacheKey = buildLocationCacheKey(trimmedQuery);
+  const cached = resolvedLocationCache.get(cacheKey);
 
-  if (!response.ok) {
-    throw new Error("Unable to fetch location suggestions.");
+  if (cached) {
+    const now = Date.now();
+    if (cached.expiresAt > now) {
+      return cached.data;
+    }
+    resolvedLocationCache.delete(cacheKey);
   }
 
-  const data: unknown = await response.json();
-  const geocodingResponse = data as OpenMeteoGeocodingResponse;
-  const rawResults = geocodingResponse.results ?? [];
+  const inFlightRequest = inFlightLocationRequests.get(cacheKey);
+  if (inFlightRequest) {
+    return inFlightRequest;
+  }
 
-  return rawResults.filter(isGeocodingResult).map(mapResultToLocation);
+  const requestPromise = (async (): Promise<LocationOption[]> => {
+    const response = await fetch(buildGeocodingUrl(trimmedQuery), {
+      signal: options.signal
+    });
+
+    if (!response.ok) {
+      throw new Error("Unable to fetch location suggestions.");
+    }
+
+    const data: unknown = await response.json();
+    const geocodingResponse = data as OpenMeteoGeocodingResponse;
+    const rawResults = geocodingResponse.results ?? [];
+    const mappedResults = rawResults.filter(isGeocodingResult).map(mapResultToLocation);
+
+    resolvedLocationCache.set(cacheKey, {
+      data: mappedResults,
+      expiresAt: Date.now() + LOCATION_CACHE_TTL_MS
+    });
+
+    return mappedResults;
+  })();
+
+  inFlightLocationRequests.set(cacheKey, requestPromise);
+
+  try {
+    return await requestPromise;
+  } finally {
+    inFlightLocationRequests.delete(cacheKey);
+  }
+}
+
+export function __clearLocationCacheForTests(): void {
+  resolvedLocationCache.clear();
+  inFlightLocationRequests.clear();
 }
