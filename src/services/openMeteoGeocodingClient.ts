@@ -3,17 +3,14 @@ import type {
   OpenMeteoGeocodingResponse,
   OpenMeteoGeocodingResult
 } from "../types/geocoding";
+import { createAsyncTtlRequestCache } from "./asyncTtlRequestCache";
 
 const GEOCODING_BASE_URL = "https://geocoding-api.open-meteo.com/v1/search";
 const LOCATION_CACHE_TTL_MS = 5 * 60 * 1000;
 
-type LocationCacheEntry = {
-  data: LocationOption[];
-  expiresAt: number;
-};
-
-const resolvedLocationCache = new Map<string, LocationCacheEntry>();
-const inFlightLocationRequests = new Map<string, Promise<LocationOption[]>>();
+const locationRequestCache = createAsyncTtlRequestCache<LocationOption[]>({
+  ttlMs: LOCATION_CACHE_TTL_MS
+});
 
 interface FetchLocationSuggestionsOptions {
   signal?: AbortSignal;
@@ -68,22 +65,7 @@ export async function fetchLocationSuggestions(
   }
 
   const cacheKey = buildLocationCacheKey(trimmedQuery);
-  const cached = resolvedLocationCache.get(cacheKey);
-
-  if (cached) {
-    const now = Date.now();
-    if (cached.expiresAt > now) {
-      return cached.data;
-    }
-    resolvedLocationCache.delete(cacheKey);
-  }
-
-  const inFlightRequest = inFlightLocationRequests.get(cacheKey);
-  if (inFlightRequest) {
-    return inFlightRequest;
-  }
-
-  const requestPromise = (async (): Promise<LocationOption[]> => {
+  return locationRequestCache.getOrCreate(cacheKey, async () => {
     const response = await fetch(buildGeocodingUrl(trimmedQuery), {
       signal: options.signal
     });
@@ -95,26 +77,10 @@ export async function fetchLocationSuggestions(
     const data: unknown = await response.json();
     const geocodingResponse = data as OpenMeteoGeocodingResponse;
     const rawResults = geocodingResponse.results ?? [];
-    const mappedResults = rawResults.filter(isGeocodingResult).map(mapResultToLocation);
-
-    resolvedLocationCache.set(cacheKey, {
-      data: mappedResults,
-      expiresAt: Date.now() + LOCATION_CACHE_TTL_MS
-    });
-
-    return mappedResults;
-  })();
-
-  inFlightLocationRequests.set(cacheKey, requestPromise);
-
-  try {
-    return await requestPromise;
-  } finally {
-    inFlightLocationRequests.delete(cacheKey);
-  }
+    return rawResults.filter(isGeocodingResult).map(mapResultToLocation);
+  });
 }
 
 export function __clearLocationCacheForTests(): void {
-  resolvedLocationCache.clear();
-  inFlightLocationRequests.clear();
+  locationRequestCache.clear();
 }
